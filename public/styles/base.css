@@ -1,0 +1,22 @@
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	min-height: 100vh;
+	background: #2a2a2e;
+	background-image:
+		radial-gradient(ellipse 120% 50% at 50% 0%, rgba(18, 18, 20, 0.8) 0%, transparent 70%),
+		radial-gradient(ellipse 80% 40% at 50% 0%, rgba(15, 15, 18, 0.5) 0%, transparent 60%),
+		linear-gradient(to bottom, #222226 0%, #2a2a2e 60%, #333338 100%);
+	color: #d4d4d4;
+	font-family: system-ui, -apple-system, sans-serif;
+}

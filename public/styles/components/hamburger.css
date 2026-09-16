@@ -1,0 +1,314 @@
+/* ---- HAMBURGER ---- */
+.hamburger {
+	position: fixed;
+	top: 1.5rem;
+	right: 1.5rem;
+	z-index: 1002;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+	width: 44px;
+	height: 44px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 14px;
+	cursor: pointer;
+	padding: 0;
+	opacity: 1;
+	transition: opacity 0.3s ease 300ms;
+}
+
+.hamburger.hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.hamburger:hover {
+	background: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+.hamburger .line {
+	display: block;
+	width: 20px;
+	height: 1.5px;
+	background: #d4d4d4;
+	border-radius: 1px;
+	transition: background 0.2s ease;
+}
+
+.hamburger:hover .line {
+	background: #fff;
+}
+
+/* ---- OVERLAY ---- */
+.overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	background: rgba(18, 18, 20, 0.98);
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		opacity 0.2s ease 200ms,
+		visibility 0.2s ease 200ms;
+}
+
+.overlay.active {
+	opacity: 1;
+	visibility: visible;
+	transition-delay: 0ms, 0ms;
+}
+
+/* ---- CLOSE BLOCKER ---- */
+.close-blocker {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	background: transparent;
+	pointer-events: auto;
+	cursor: default;
+	animation: blocker-life 0.45s linear forwards;
+}
+
+@keyframes blocker-life {
+	0%   { opacity: 1; }
+	100% { opacity: 0; pointer-events: none; }
+}
+
+/* ---- GRID ---- */
+.grid {
+	--notch: clamp(68px, 8vmin, 96px);
+	position: relative;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	gap: 0;
+	width: 100vw;
+	height: 100vh;
+	transition:
+		grid-template-columns 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+		grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- GRID CELLS ---- */
+.grid-cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: rgba(255, 255, 255, 0.03);
+	text-decoration: none;
+	color: #d4d4d4;
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+	transition:
+		background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+		opacity 0.2s ease;
+}
+
+/* --- L-notch clip-paths --- */
+.grid-cell.tl {
+	clip-path: polygon(
+		0 0, 100% 0,
+		100% calc(100% - var(--notch)),
+		calc(100% - var(--notch)) calc(100% - var(--notch)),
+		calc(100% - var(--notch)) 100%,
+		0 100%
+	);
+}
+
+.grid-cell.tr {
+	clip-path: polygon(
+		0 0, 100% 0, 100% 100%,
+		var(--notch) 100%,
+		var(--notch) calc(100% - var(--notch)),
+		0 calc(100% - var(--notch))
+	);
+}
+
+.grid-cell.bl {
+	clip-path: polygon(
+		0 0,
+		calc(100% - var(--notch)) 0,
+		calc(100% - var(--notch)) var(--notch),
+		100% var(--notch),
+		100% 100%,
+		0 100%
+	);
+}
+
+.grid-cell.br {
+	clip-path: polygon(
+		var(--notch) 0, 100% 0, 100% 100%, 0 100%,
+		0 var(--notch),
+		var(--notch) var(--notch)
+	);
+}
+
+/* --- HOVER states --- */
+.grid-cell:hover {
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.grid-cell.expanded {
+	background: rgba(255, 255, 255, 0.07);
+	z-index: 10;
+}
+
+.grid-cell.dimmed {
+	opacity: 0.3;
+	z-index: 1;
+}
+
+/* --- ENTRANCE: slide in from corners (active) --- */
+.grid-cell.tl { transform: translate(-100vw, -100vh); opacity: 0; }
+.grid-cell.tr { transform: translate(100vw, -100vh); opacity: 0; }
+.grid-cell.bl { transform: translate(-100vw, 100vh); opacity: 0; }
+.grid-cell.br { transform: translate(100vw, 100vh); opacity: 0; }
+
+.overlay.active .grid-cell.tl {
+	transform: translate(0, 0);
+	opacity: 1;
+	transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 250ms,
+	            opacity 0.6s ease 250ms;
+}
+
+.overlay.active .grid-cell.tr {
+	transform: translate(0, 0);
+	opacity: 1;
+	transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 350ms,
+	            opacity 0.6s ease 350ms;
+}
+
+.overlay.active .grid-cell.bl {
+	transform: translate(0, 0);
+	opacity: 1;
+	transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 450ms,
+	            opacity 0.6s ease 450ms;
+}
+
+.overlay.active .grid-cell.br {
+	transform: translate(0, 0);
+	opacity: 1;
+	transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 550ms,
+	            opacity 0.6s ease 550ms;
+}
+
+/* --- EXIT: immediate fly out --- */
+.overlay:not(.active) .grid-cell.tl {
+	transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+	            opacity 0.2s ease 0ms;
+}
+
+.overlay:not(.active) .grid-cell.tr {
+	transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) 15ms,
+	            opacity 0.2s ease 15ms;
+}
+
+.overlay:not(.active) .grid-cell.bl {
+	transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) 30ms,
+	            opacity 0.2s ease 30ms;
+}
+
+.overlay:not(.active) .grid-cell.br {
+	transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) 45ms,
+	            opacity 0.2s ease 45ms;
+}
+
+/* ---- CELL INNER ---- */
+.cell-inner {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.cell-label {
+	font-size: clamp(1.5rem, 4.5vw, 3.5rem);
+	font-weight: 200;
+	letter-spacing: 0.06em;
+	transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-cell.expanded .cell-label {
+	transform: scale(1.08);
+}
+
+.grid-cell.dimmed .cell-label {
+	opacity: 0.4;
+}
+
+.cell-num {
+	font-size: 0.65rem;
+	letter-spacing: 0.15em;
+	color: #555;
+	font-variant-numeric: tabular-nums;
+	transition: opacity 0.3s ease;
+}
+
+.grid-cell.dimmed .cell-num {
+	opacity: 0.2;
+}
+
+/* ---- CLOSE BUTTON ---- */
+.close-cell {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: clamp(120px, 16vmin, 180px);
+	height: clamp(120px, 16vmin, 180px);
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	cursor: pointer;
+	z-index: 50;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition:
+		top 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+		left 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+		opacity 0.2s ease 0ms;
+}
+
+.overlay.active .close-cell {
+	opacity: 1;
+}
+
+.overlay:not(.active) .close-cell {
+	opacity: 0;
+}
+
+.close-cell:hover .x-line {
+	width: 140px;
+	height: 4px;
+	background: #fff;
+}
+
+.x-line {
+	display: block;
+	width: 32px;
+	height: 2px;
+	background: #d4d4d4;
+	border-radius: 999px;
+	position: absolute;
+	transition:
+		width 0.25s ease,
+		height 0.25s ease,
+		background 0.2s ease;
+}
+
+.x-line:nth-child(1) {
+	transform: rotate(45deg);
+}
+
+.x-line:nth-child(2) {
+	transform: rotate(-45deg);
+}
