@@ -6,22 +6,29 @@
 	"engines": {
 		"node": ">=22.12.0"
 	},
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/markdoc": "^2.0.9",
-    "@astrojs/react": "^6.0.5",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "astro": "^7.3.2",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
-  },
-  "allowScripts": {
-    "esbuild": true
-  }
+	"scripts": {
+		"dev": "npx wrangler types && astro dev",
+		"build": "npx wrangler types && astro build",
+		"preview": "npx wrangler dev",
+		"deploy": "astro build && npx wrangler deploy",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/cloudflare": "^14.3.1",
+		"@astrojs/markdoc": "^2.0.9",
+		"@astrojs/react": "^6.0.5",
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
+		"astro": "^7.3.2",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0"
+	},
+	"allowScripts": {
+		"esbuild": true,
+		"workerd": true
+	},
+	"devDependencies": {
+		"@types/node": "^22.20.2",
+		"wrangler": "^4.132.0"
+	}
 }

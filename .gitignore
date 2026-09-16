@@ -23,3 +23,6 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 session-ses_f55a.md
+
+.wrangler/
+worker-configuration.d.ts
