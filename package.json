@@ -8,6 +8,7 @@
 	},
 	"scripts": {
 		"dev": "npx wrangler types && astro dev",
+		"start": "astro dev",
 		"build": "npx wrangler types && astro build",
 		"preview": "npx wrangler dev",
 		"deploy:cf": "astro build && npx wrangler deploy",
