@@ -1,5 +1,5 @@
 {
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "src/entry.ts",
   "name": "varifocal",
   "compatibility_date": "2026-09-16",
   "compatibility_flags": [
@@ -10,6 +10,12 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "337348ee06d24e89be5ffa88957850d3"
+    }
+  ],
   "observability": {
     "enabled": true
   },

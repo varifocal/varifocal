@@ -10,7 +10,7 @@
 		"dev": "npx wrangler types && astro dev",
 		"build": "npx wrangler types && astro build",
 		"preview": "npx wrangler dev",
-		"deploy": "astro build && npx wrangler deploy",
+		"deploy:cf": "astro build && npx wrangler deploy",
 		"astro": "astro"
 	},
 	"dependencies": {
