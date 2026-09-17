@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 
 const LINKS = [
 	{ label: 'About', href: '/about', area: 'tl' },
@@ -67,6 +67,12 @@ export default function Hamburger() {
 	}, []);
 
 	const grid = useMemo(() => (hovered ? HOVER[hovered] : IDLE), [hovered]);
+
+	useEffect(() => {
+		if (!closing) return;
+		const t = setTimeout(() => setClosing(false), 450);
+		return () => clearTimeout(t);
+	}, [closing]);
 
 	return (
 		<>
