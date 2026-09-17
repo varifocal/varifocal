@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 
 const LINKS = [
 	{ label: 'Home', href: '/', area: 'tl' },
@@ -24,25 +24,32 @@ const HOVER: Record<Area, typeof IDLE> = {
 
 const NUM: Record<Area, string> = { tl: '01', tr: '02', bl: '03', br: '04' };
 
+const HOVER_DELAY = 120;
+
 export default function Hamburger() {
 	const [open, setOpen] = useState(false);
 	const [hovered, setHovered] = useState<Area | null>(null);
 	const [closing, setClosing] = useState(false);
+	const hoverTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
 	const handleClose = useCallback(() => {
 		setHovered(null);
 		setClosing(true);
 		document.body.style.overflow = '';
+		if (hoverTimer.current) clearTimeout(hoverTimer.current);
 	}, []);
 
-	useEffect(() => {
-		if (!closing) return;
-		const id = setTimeout(() => {
-			setClosing(false);
-			setOpen(false);
-		}, 450);
-		return () => clearTimeout(id);
-	}, [closing]);
+	const scheduleHover = useCallback((area: Area) => {
+		if (hoverTimer.current) clearTimeout(hoverTimer.current);
+		hoverTimer.current = setTimeout(() => {
+			setHovered(area);
+		}, HOVER_DELAY);
+	}, []);
+
+	const cancelHover = useCallback(() => {
+		if (hoverTimer.current) clearTimeout(hoverTimer.current);
+		setHovered(null);
+	}, []);
 
 	const toggle = useCallback(() => {
 		setOpen((prev) => {
@@ -71,7 +78,7 @@ export default function Hamburger() {
 
 			<nav
 				className={`overlay${open || closing ? ' active' : ''}`}
-				onMouseLeave={() => !closing && setHovered(null)}
+				onMouseLeave={() => !closing && cancelHover()}
 			>
 				<div
 					className="grid"
@@ -85,10 +92,18 @@ export default function Hamburger() {
 							key={label}
 							href={href}
 							className={`grid-cell ${area}${hovered === area ? ' expanded' : ''}${hovered !== null && hovered !== area ? ' dimmed' : ''}`}
-							onMouseEnter={() => !closing && setHovered(area)}
+							onMouseEnter={() => !closing && scheduleHover(area)}
 							onClick={toggle}
 						>
-							<div className={`cell-bg ${area}-bg${hovered === area ? ' visible' : ''}`} />
+							<div className={`cell-bg${hovered === area ? ' visible' : ''}`}>
+								<img
+									src="/assets/hamburger/home.svg"
+									alt=""
+									loading="lazy"
+									decoding="async"
+									draggable={false}
+								/>
+							</div>
 							<div className="cell-inner">
 								<span className="cell-label">{label}</span>
 								<span className="cell-num">{NUM[area]}</span>
