@@ -3,8 +3,8 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 const LINKS = [
 	{ label: 'About', href: '/about', area: 'tl', bg: '/assets/hamburger/1.svg' },
 	{ label: 'Projects', href: '/projects', area: 'tr', bg: '/assets/hamburger/2.svg' },
-	{ label: 'Blog', href: '/blog', area: 'bl', bg: '/assets/hamburger/1.svg' },
-	{ label: 'Contact', href: '/contact', area: 'br', bg: '/assets/hamburger/2.svg' },
+	{ label: 'Blog', href: '/blog', area: 'bl', bg: '/assets/hamburger/2.svg' },
+	{ label: 'Contact', href: '/contact', area: 'br', bg: '/assets/hamburger/1.svg' },
 ] as const;
 
 type Area = (typeof LINKS)[number]['area'];
