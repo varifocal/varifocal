@@ -1,10 +1,10 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 
 const LINKS = [
-	{ label: 'Home', href: '#', area: 'tl' },
-	{ label: 'About', href: '#', area: 'tr' },
-	{ label: 'Work', href: '#', area: 'bl' },
-	{ label: 'Contact', href: '#', area: 'br' },
+	{ label: 'Home', href: '/', area: 'tl' },
+	{ label: 'About', href: '/about', area: 'tr' },
+	{ label: 'Work', href: '/work', area: 'bl' },
+	{ label: 'Contact', href: '/contact', area: 'br' },
 ] as const;
 
 type Area = (typeof LINKS)[number]['area'];
@@ -88,6 +88,7 @@ export default function Hamburger() {
 							onMouseEnter={() => !closing && setHovered(area)}
 							onClick={toggle}
 						>
+							<div className={`cell-bg ${area}-bg${hovered === area ? ' visible' : ''}`} />
 							<div className="cell-inner">
 								<span className="cell-label">{label}</span>
 								<span className="cell-num">{NUM[area]}</span>

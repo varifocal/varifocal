@@ -1,0 +1,23 @@
+.page {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	padding: 2rem;
+	gap: 1rem;
+}
+
+.page h1 {
+	font-size: clamp(2rem, 6vw, 4rem);
+	font-weight: 200;
+	letter-spacing: 0.08em;
+	color: #e8e8e8;
+}
+
+.page p {
+	font-size: 0.875rem;
+	letter-spacing: 0.25em;
+	text-transform: uppercase;
+	color: #666;
+}
