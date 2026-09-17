@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
 
 const LINKS = [
-	{ label: 'Home', href: '/', area: 'tl' },
-	{ label: 'About', href: '/about', area: 'tr' },
-	{ label: 'Work', href: '/work', area: 'bl' },
+	{ label: 'About', href: '/about', area: 'tl' },
+	{ label: 'Projects', href: '/projects', area: 'tr' },
+	{ label: 'Blog', href: '/blog', area: 'bl' },
 	{ label: 'Contact', href: '/contact', area: 'br' },
 ] as const;
 
@@ -24,31 +24,36 @@ const HOVER: Record<Area, typeof IDLE> = {
 
 const NUM: Record<Area, string> = { tl: '01', tr: '02', bl: '03', br: '04' };
 
-const HOVER_DELAY = 120;
+const MAX_MOVES = 5;
+const MOVE_WINDOW = 1000;
 
 export default function Hamburger() {
 	const [open, setOpen] = useState(false);
 	const [hovered, setHovered] = useState<Area | null>(null);
 	const [closing, setClosing] = useState(false);
-	const hoverTimer = useRef<ReturnType<typeof setTimeout>>(null);
+	const moveTimestamps = useRef<number[]>([]);
 
 	const handleClose = useCallback(() => {
 		setHovered(null);
 		setClosing(true);
 		document.body.style.overflow = '';
-		if (hoverTimer.current) clearTimeout(hoverTimer.current);
 	}, []);
 
 	const scheduleHover = useCallback((area: Area) => {
-		if (hoverTimer.current) clearTimeout(hoverTimer.current);
-		hoverTimer.current = setTimeout(() => {
-			setHovered(area);
-		}, HOVER_DELAY);
+		const now = Date.now();
+		moveTimestamps.current.push(now);
+		moveTimestamps.current = moveTimestamps.current.filter((t) => now - t < MOVE_WINDOW);
+
+		if (moveTimestamps.current.length > MAX_MOVES) {
+			return;
+		}
+
+		setHovered(area);
 	}, []);
 
 	const cancelHover = useCallback(() => {
-		if (hoverTimer.current) clearTimeout(hoverTimer.current);
 		setHovered(null);
+		moveTimestamps.current = [];
 	}, []);
 
 	const toggle = useCallback(() => {
@@ -99,7 +104,7 @@ export default function Hamburger() {
 								<img
 									src="/assets/hamburger/home.svg"
 									alt=""
-									loading="lazy"
+									loading="eager"
 									decoding="async"
 									draggable={false}
 								/>
