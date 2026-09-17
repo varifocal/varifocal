@@ -1,10 +1,10 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 
 const LINKS = [
-	{ label: 'About', href: '/about', area: 'tl' },
-	{ label: 'Projects', href: '/projects', area: 'tr' },
-	{ label: 'Blog', href: '/blog', area: 'bl' },
-	{ label: 'Contact', href: '/contact', area: 'br' },
+	{ label: 'About', href: '/about', area: 'tl', bg: '/assets/hamburger/1.svg' },
+	{ label: 'Projects', href: '/projects', area: 'tr', bg: '/assets/hamburger/2.svg' },
+	{ label: 'Blog', href: '/blog', area: 'bl', bg: '/assets/hamburger/1.svg' },
+	{ label: 'Contact', href: '/contact', area: 'br', bg: '/assets/hamburger/2.svg' },
 ] as const;
 
 type Area = (typeof LINKS)[number]['area'];
@@ -99,7 +99,7 @@ export default function Hamburger() {
 						gridTemplateRows: grid.rows,
 					}}
 				>
-					{LINKS.map(({ label, href, area }) => (
+				{LINKS.map(({ label, href, area, bg }) => (
 						<a
 							key={label}
 							href={href}
@@ -109,7 +109,7 @@ export default function Hamburger() {
 						>
 							<div className={`cell-bg${hovered === area ? ' visible' : ''}`}>
 								<img
-									src="/assets/hamburger/home.svg"
+									src={bg}
 									alt=""
 									loading="eager"
 									decoding="async"
