@@ -35,6 +35,7 @@ export default function Hamburger() {
 
 	const handleClose = useCallback(() => {
 		setHovered(null);
+		setOpen(false);
 		setClosing(true);
 		document.body.style.overflow = '';
 	}, []);
