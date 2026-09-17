@@ -17,6 +17,8 @@
 		"@astrojs/cloudflare": "^14.3.1",
 		"@astrojs/markdoc": "^2.0.9",
 		"@astrojs/react": "^6.0.5",
+		"@cloudflare/realtimekit-react": "^2.0.2",
+		"@cloudflare/realtimekit-react-ui": "^2.0.2",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
 		"astro": "^7.3.2",

@@ -12,5 +12,12 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "workflows": [
+    {
+      "name": "portfolio-workflow",
+      "binding": "PORTFOLIO_WORKFLOW",
+      "class_name": "PortfolioWorkflow"
+    }
+  ]
 }
