@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { initWireframes } from '../lib/wireframe-overlay';
 
 const LINKS = [
 	{ label: 'About', href: '/about', area: 'tl', bg: '/assets/hamburger/1.svg' },
@@ -44,11 +45,7 @@ export default function Hamburger() {
 		const now = Date.now();
 		moveTimestamps.current.push(now);
 		moveTimestamps.current = moveTimestamps.current.filter((t) => now - t < MOVE_WINDOW);
-
-		if (moveTimestamps.current.length > MAX_MOVES) {
-			return;
-		}
-
+		if (moveTimestamps.current.length > MAX_MOVES) return;
 		setHovered(area);
 	}, []);
 
@@ -74,6 +71,10 @@ export default function Hamburger() {
 		return () => clearTimeout(t);
 	}, [closing]);
 
+	useEffect(() => {
+		initWireframes();
+	}, []);
+
 	return (
 		<>
 			<button
@@ -81,6 +82,7 @@ export default function Hamburger() {
 				onClick={toggle}
 				aria-label="Open menu"
 				aria-expanded={open}
+				data-wireframe-track
 			>
 				<span className="line" />
 				<span className="line" />
@@ -99,13 +101,14 @@ export default function Hamburger() {
 						gridTemplateRows: grid.rows,
 					}}
 				>
-				{LINKS.map(({ label, href, area, bg }) => (
+					{LINKS.map(({ label, href, area, bg }) => (
 						<a
 							key={label}
 							href={href}
 							className={`grid-cell ${area}${hovered === area ? ' expanded' : ''}${hovered !== null && hovered !== area ? ' dimmed' : ''}`}
 							onMouseEnter={() => !closing && scheduleHover(area)}
 							onClick={toggle}
+							data-wireframe-track
 						>
 							<div className={`cell-bg${hovered === area ? ' visible' : ''}`}>
 								<img
@@ -131,6 +134,7 @@ export default function Hamburger() {
 						}}
 						onClick={handleClose}
 						aria-label="Close menu"
+						data-wireframe-track
 					>
 						<span className="x-line" />
 						<span className="x-line" />

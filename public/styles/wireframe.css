@@ -1,0 +1,25 @@
+/* ---- WIREFRAME OVERLAY SYSTEM ---- */
+@media (prefers-reduced-motion: reduce) {
+	.wireframe-svg { display: none !important; }
+}
+
+.wireframe-container {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 9998;
+	overflow: hidden;
+}
+
+.wireframe-svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	overflow: visible;
+	transition: opacity 0.15s ease;
+}
+
+.wireframe-svg.fading {
+	opacity: 0;
+}
