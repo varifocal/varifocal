@@ -1,16 +1,16 @@
 import { isEnabled, isElementExcluded } from './wireframe-config';
 
-interface WireframeEntry {
+interface Entry {
 	el: Element;
-	svg: SVGElement;
-	group: SVGElement;
+	box: HTMLElement;
 	initial: DOMRect;
-	onTransitionEnd: () => void;
+	raf: number;
+	onEnd: () => void;
 	onLeave: () => void;
 }
 
 let container: HTMLElement | null = null;
-const active = new WeakMap<Element, WireframeEntry>();
+const active = new WeakMap<Element, Entry>();
 
 function ensureContainer(): HTMLElement {
 	if (container && container.isConnected) return container;
@@ -21,204 +21,105 @@ function ensureContainer(): HTMLElement {
 	return container;
 }
 
-function parseNotch(el: Element): number {
-	const grid = el.closest('.grid');
-	if (!grid) return 0;
-	const raw = getComputedStyle(grid).getPropertyValue('--notch').trim();
-	const m = raw.match(/([\d.]+)px/);
+function notchPx(el: Element): number {
+	const g = el.closest('.grid');
+	if (!g) return 0;
+	const m = getComputedStyle(g).getPropertyValue('--notch').trim().match(/([\d.]+)px/);
 	return m ? parseFloat(m[1]) : 0;
 }
 
-function clipPolygon(el: Element): string | null {
+function makeBox(): HTMLElement {
+	const b = document.createElement('div');
+	b.className = 'wireframe-box';
+	b.innerHTML = '<i class="wf-c tl"></i><i class="wf-c tr"></i><i class="wf-c bl"></i><i class="wf-c br"></i><b class="wf-label"></b>';
+	ensureContainer().appendChild(b);
+	return b;
+}
+
+function setClip(box: HTMLElement, el: Element) {
 	const cls = typeof el.className === 'string' ? el.className : '';
+	const n = notchPx(el);
+	if (!n) { box.style.clipPath = ''; return; }
 	const r = el.getBoundingClientRect();
-	const w = r.width;
-	const h = r.height;
-	const n = parseNotch(el);
-	if (n === 0) return null;
-	if (cls.includes(' tl')) return `0,0 ${w},0 ${w},${h - n} ${w - n},${h - n} ${w - n},${h} 0,${h}`;
-	if (cls.includes(' tr')) return `0,0 ${w},0 ${w},${h} ${n},${h} ${n},${h - n} 0,${h - n}`;
-	if (cls.includes(' bl')) return `0,0 ${w - n},0 ${w - n},${n} ${w},${n} ${w},${h} 0,${h}`;
-	if (cls.includes(' br')) return `${n},0 ${w},0 ${w},${h} 0,${h} 0,${n} ${n},${n}`;
-	return null;
+	const w = r.width, h = r.height;
+	const v = (x: number) => `${(x / w * 100)}%`;
+	const ht = (y: number) => `${(y / h * 100)}%`;
+	if (cls.includes(' tl')) box.style.clipPath = `polygon(0 0,100% 0,100% ${ht(h-n)},${v(w-n)} ${ht(h-n)},${v(w-n)} 100%,0 100%)`;
+	else if (cls.includes(' tr')) box.style.clipPath = `polygon(0 0,100% 0,100% 100%,${v(n)} 100%,${v(n)} ${ht(h-n)},0 ${ht(h-n)})`;
+	else if (cls.includes(' bl')) box.style.clipPath = `polygon(0 0,${v(w-n)} 0,${v(w-n)} ${ht(n)},100% ${ht(n)},100% 100%,0 100%)`;
+	else if (cls.includes(' br')) box.style.clipPath = `polygon(${v(n)} 0,100% 0,100% 100%,0 100%,0 ${ht(n)},${v(n)} ${ht(n)})`;
+	else box.style.clipPath = '';
 }
 
-function makeSVG(): { svg: SVGElement; group: SVGElement } {
-	const ns = 'http://www.w3.org/2000/svg';
-	const svg = document.createElementNS(ns, 'svg');
-	svg.classList.add('wireframe-svg');
-	svg.setAttribute('fill', 'none');
-
-	const g = document.createElementNS(ns, 'g');
-
-	const vLine = document.createElementNS(ns, 'line');
-	vLine.setAttribute('stroke', 'rgba(255,255,255,0.25)');
-	vLine.setAttribute('stroke-width', '1');
-	vLine.setAttribute('class', 'wf-v');
-	g.appendChild(vLine);
-
-	const hLine = document.createElementNS(ns, 'line');
-	hLine.setAttribute('stroke', 'rgba(255,255,255,0.25)');
-	hLine.setAttribute('stroke-width', '1');
-	hLine.setAttribute('class', 'wf-h');
-	g.appendChild(hLine);
-
-	const path = document.createElementNS(ns, 'path');
-	path.setAttribute('stroke', 'rgba(255,255,255,0.7)');
-	path.setAttribute('stroke-width', '1');
-	path.setAttribute('fill', 'none');
-	path.setAttribute('class', 'wf-path');
-	g.appendChild(path);
-
-	for (const c of ['tl', 'tr', 'bl', 'br']) {
-		const p = document.createElementNS(ns, 'path');
-		p.setAttribute('stroke', 'rgba(255,255,255,0.9)');
-		p.setAttribute('stroke-width', '2');
-		p.setAttribute('fill', 'none');
-		p.setAttribute('class', `wf-c-${c}`);
-		g.appendChild(p);
-	}
-
-	const bg = document.createElementNS(ns, 'rect');
-	bg.setAttribute('fill', 'rgba(0,0,0,0.65)');
-	bg.setAttribute('rx', '2');
-	bg.setAttribute('class', 'wf-bg');
-	g.appendChild(bg);
-
-	const txt = document.createElementNS(ns, 'text');
-	txt.setAttribute('text-anchor', 'middle');
-	txt.setAttribute('dominant-baseline', 'central');
-	txt.setAttribute('fill', '#fff');
-	txt.setAttribute('font-family', 'monospace');
-	txt.setAttribute('font-size', '10');
-	txt.setAttribute('font-weight', '600');
-	txt.setAttribute('class', 'wf-txt');
-	g.appendChild(txt);
-
-	svg.appendChild(g);
-	ensureContainer().appendChild(svg);
-	return { svg, group: g };
+function same(a: DOMRect, b: DOMRect) {
+	return Math.abs(a.width - b.width) < 0.5 && Math.abs(a.height - b.height) < 0.5 &&
+		Math.abs(a.left - b.left) < 0.5 && Math.abs(a.top - b.top) < 0.5;
 }
 
-function draw(entry: WireframeEntry) {
-	const r = entry.el.getBoundingClientRect();
-	const w = r.width;
-	const h = r.height;
-
-	entry.svg.setAttribute('width', String(w));
-	entry.svg.setAttribute('height', String(h));
-	entry.svg.style.top = `${r.top}px`;
-	entry.svg.style.left = `${r.left}px`;
-
-	const clip = clipPolygon(entry.el);
-	const pathEl = entry.group.querySelector('.wf-path') as SVGPathElement;
-	pathEl.setAttribute('d', clip ? `M${clip}Z` : `M0,0 ${w},0 ${w},${h} 0,${h}Z`);
-
-	const cx = w / 2;
-	const cy = h / 2;
-
-	const vLine = entry.group.querySelector('.wf-v') as SVGLineElement;
-	vLine.setAttribute('x1', String(cx));
-	vLine.setAttribute('y1', '0');
-	vLine.setAttribute('x2', String(cx));
-	vLine.setAttribute('y2', String(h));
-
-	const hLine = entry.group.querySelector('.wf-h') as SVGLineElement;
-	hLine.setAttribute('x1', '0');
-	hLine.setAttribute('y1', String(cy));
-	hLine.setAttribute('x2', String(w));
-	hLine.setAttribute('y2', String(cy));
-
-	const cs = 8;
-	for (const [cls, x1, y1, x2, y2, x3, y3] of [
-		['.wf-c-tl', 0, 0, cs, 0, 0, cs],
-		['.wf-c-tr', w, 0, w - cs, 0, w, cs],
-		['.wf-c-bl', 0, h, cs, h, 0, h - cs],
-		['.wf-c-br', w, h, w - cs, h, w, h - cs],
-	] as const) {
-		const p = entry.group.querySelector(cls) as SVGPathElement;
-		p.setAttribute('d', `M${x1},${y1} L${x2},${y2} M${x1},${y1} L${x3},${y3}`);
-	}
-
-	const dw = w - entry.initial.width;
-	const dh = h - entry.initial.height;
-	const dx = r.left - entry.initial.left;
-	const dy = r.top - entry.initial.top;
-	const scaleW = entry.initial.width > 0 ? Math.abs(dw / entry.initial.width) : 0;
-	const scaleH = entry.initial.height > 0 ? Math.abs(dh / entry.initial.height) : 0;
-	const maxScale = Math.max(scaleW, scaleH);
-	const moved = Math.sqrt(dx * dx + dy * dy);
-
-	let label = 'tracking';
-	if (maxScale > 0.01) {
-		const growing = dw > 0 || dh > 0;
-		label = `${growing ? 'scaling up' : 'scaling down'}: ${(maxScale * 100).toFixed(0)}%`;
-	} else if (moved > 1) {
-		label = `moving: ${moved.toFixed(0)}px`;
-	}
-
-	const txt = entry.group.querySelector('.wf-txt') as SVGTextElement;
-	txt.textContent = label;
-	txt.setAttribute('x', String(cx));
-	txt.setAttribute('y', String(cy));
-
-	const tw = label.length * 6 + 14;
-	const bg = entry.group.querySelector('.wf-bg') as SVGRectElement;
-	bg.setAttribute('x', String(cx - tw / 2));
-	bg.setAttribute('y', String(cy - 9));
-	bg.setAttribute('width', String(tw));
-	bg.setAttribute('height', '18');
+function labelText(i: DOMRect, c: DOMRect) {
+	const dw = c.width - i.width, dh = c.height - i.height;
+	const dx = c.left - i.left, dy = c.top - i.top;
+	const sw = i.width > 0 ? Math.abs(dw / i.width) : 0;
+	const sh = i.height > 0 ? Math.abs(dh / i.height) : 0;
+	const s = Math.max(sw, sh);
+	const m = Math.sqrt(dx * dx + dy * dy);
+	if (s > 0.01) return `${dw > 0 || dh > 0 ? 'scaling up' : 'scaling down'}: ${(s * 100).toFixed(0)}%`;
+	if (m > 1) return `moving: ${m.toFixed(0)}px`;
+	return 'tracking';
 }
 
-function show(el: Element) {
+function tick(e: Entry) {
+	const c = e.el.getBoundingClientRect();
+	e.box.style.top = `${c.top}px`;
+	e.box.style.left = `${c.left}px`;
+	e.box.style.width = `${c.width}px`;
+	e.box.style.height = `${c.height}px`;
+	setClip(e.box, e.el);
+	const l = e.box.querySelector('.wf-label') as HTMLElement;
+	if (l) l.textContent = labelText(e.initial, c);
+	e.raf = requestAnimationFrame(() => tick(e));
+}
+
+function add(el: Element) {
 	if (active.has(el)) return;
 	if (!isEnabled() || isElementExcluded(el)) return;
-
 	const r = el.getBoundingClientRect();
 	if (r.width === 0 && r.height === 0) return;
 
-	const { svg, group } = makeSVG();
-	const entry: WireframeEntry = {
-		el,
-		svg,
-		group,
-		initial: r,
-		onTransitionEnd: () => hide(el),
-		onLeave: () => hide(el),
-	};
+	const box = makeBox();
+	const onEnd = () => rm(el);
+	const onLeave = () => rm(el);
 
-	el.addEventListener('transitionend', entry.onTransitionEnd, { once: true });
-	el.addEventListener('pointerleave', entry.onLeave, { once: true });
+	el.addEventListener('transitionend', onEnd, { once: true });
+	el.addEventListener('pointerleave', onLeave, { once: true });
 
-	active.set(el, entry);
-	draw(entry);
+	const e: Entry = { el, box, initial: r, raf: 0, onEnd, onLeave };
+	active.set(el, e);
+	tick(e);
 }
 
-function hide(el: Element) {
-	const entry = active.get(el);
-	if (!entry) return;
-
-	el.removeEventListener('transitionend', entry.onTransitionEnd);
-	el.removeEventListener('pointerleave', entry.onLeave);
-
-	entry.svg.classList.add('fading');
-	setTimeout(() => entry.svg.remove(), 200);
+function rm(el: Element) {
+	const e = active.get(el);
+	if (!e) return;
+	el.removeEventListener('transitionend', e.onEnd);
+	el.removeEventListener('pointerleave', e.onLeave);
+	cancelAnimationFrame(e.raf);
+	e.box.classList.add('fading');
+	setTimeout(() => e.box.remove(), 200);
 	active.delete(el);
 }
 
+function onEnter(ev: PointerEvent) { add(ev.currentTarget as Element); }
+
 export function initWireframes(root: ParentNode = document) {
-	const els = root.querySelectorAll('[data-wireframe-track]');
-	els.forEach((el) => {
-		if ((el as any).__wfInit) return;
-		(el as any).__wfInit = true;
-		el.addEventListener('pointerenter', () => show(el));
+	root.querySelectorAll('[data-wireframe-track]').forEach((el) => {
+		if ((el as any).__wf) return;
+		(el as any).__wf = true;
+		el.addEventListener('pointerenter', onEnter);
 	});
 }
 
 export function destroyAll() {
-	active.forEach((_, el) => hide(el));
-	if (container) {
-		container.remove();
-		container = null;
-	}
+	active.forEach((_, el) => rm(el));
+	if (container) { container.remove(); container = null; }
 }

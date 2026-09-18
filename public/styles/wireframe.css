@@ -1,6 +1,6 @@
 /* ---- WIREFRAME OVERLAY SYSTEM ---- */
 @media (prefers-reduced-motion: reduce) {
-	.wireframe-svg { display: none !important; }
+	.wireframe-box { display: none !important; }
 }
 
 .wireframe-container {
@@ -11,15 +11,62 @@
 	overflow: hidden;
 }
 
-.wireframe-svg {
+.wireframe-box {
 	position: absolute;
-	top: 0;
-	left: 0;
+	border: 1px solid rgba(255, 255, 255, 0.7);
 	pointer-events: none;
-	overflow: visible;
+	will-change: top, left, width, height;
 	transition: opacity 0.15s ease;
 }
 
-.wireframe-svg.fading {
+.wireframe-box.fading {
 	opacity: 0;
+}
+
+/* Crosshair */
+.wireframe-box::before,
+.wireframe-box::after {
+	content: '';
+	position: absolute;
+	background: rgba(255, 255, 255, 0.2);
+}
+.wireframe-box::before {
+	top: 0; bottom: 0; left: 50%; width: 1px;
+}
+.wireframe-box::after {
+	left: 0; right: 0; top: 50%; height: 1px;
+}
+
+/* Corner marks */
+.wf-c {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	border-color: rgba(255, 255, 255, 0.9);
+	border-style: solid;
+	border-width: 0;
+	display: block;
+}
+.wf-c.tl { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
+.wf-c.tr { top: -1px; right: -1px; border-top-width: 2px; border-right-width: 2px; }
+.wf-c.bl { bottom: -1px; left: -1px; border-bottom-width: 2px; border-left-width: 2px; }
+.wf-c.br { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
+
+/* Status label */
+.wf-label {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font: 600 10px/1 monospace;
+	color: #fff;
+	background: rgba(0, 0, 0, 0.65);
+	padding: 3px 7px;
+	border-radius: 2px;
+	white-space: nowrap;
+	pointer-events: none;
+	letter-spacing: 0.04em;
+	user-select: none;
+	z-index: 1;
+	font-style: normal;
 }
