@@ -1,4 +1,6 @@
 ---
+import ConstructionBanner from '../components/ConstructionBanner.astro';
+
 interface Props {
 	title?: string;
 }
@@ -15,14 +17,11 @@ const { title = 'Astro' } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<link rel="stylesheet" href="/styles/base.css" />
 		<link rel="stylesheet" href="/styles/page.css" />
-		<link rel="stylesheet" href="/styles/construction.css" />
 		<link rel="stylesheet" href="/styles/wireframe.css" />
 		<title>{title}</title>
 	</head>
 	<body>
-		<div class="construction-banner">
-			<span>Under Construction</span>
-		</div>
+		<ConstructionBanner />
 		<slot />
 	</body>
 </html>

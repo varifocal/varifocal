@@ -1,0 +1,83 @@
+---
+import SiteTitle from '@astrojs/starlight/components/SiteTitle.astro';
+import MobileMenuToggle from '@astrojs/starlight/components/MobileMenuToggle.astro';
+import Hamburger from '../../components/Hamburger';
+import ConstructionBanner from '../ConstructionBanner.astro';
+---
+
+<ConstructionBanner />
+
+<header class="starlight-header">
+	<div class="starlight-header-inner">
+		<MobileMenuToggle />
+		<div class="starlight-header-title">
+			<SiteTitle />
+		</div>
+		<div class="starlight-header-right">
+			<a href="/" class="starlight-header-home" aria-label="Back to main site">Main Site</a>
+		</div>
+	</div>
+	<Hamburger client:load />
+</header>
+
+<style>
+	/* Offset content below the construction banner */
+	:root {
+		--sl-nav-height: 3.5rem;
+	}
+
+	.starlight-header {
+		position: fixed;
+		top: 2rem;
+		left: 0;
+		right: 0;
+		z-index: 1000;
+		height: var(--sl-nav-height);
+		background: var(--sl-color-bg-nav);
+		border-bottom: 1px solid var(--sl-color-hairline-shade);
+	}
+
+	.starlight-header-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 100%;
+		padding: 0 var(--sl-nav-pad-x);
+	}
+
+	.starlight-header-title {
+		display: flex;
+		align-items: center;
+	}
+
+	.starlight-header-right {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.starlight-header-home {
+		font-size: 0.8rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--sl-color-text-muted);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.starlight-header-home:hover {
+		color: var(--sl-color-text);
+	}
+
+	/* Move page content below the banner + nav */
+	:global(.main-frame) {
+		padding-top: calc(2rem + var(--sl-nav-height)) !important;
+	}
+
+	/* Mobile sidebar needs to account for banner offset */
+	@media (max-width: 50em) {
+		.starlight-header {
+			top: 2rem;
+		}
+	}
+</style>

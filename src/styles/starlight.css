@@ -1,0 +1,145 @@
+/* ---- Varifocal Starlight Theme ---- */
+/* Maps site design tokens onto Starlight's --sl-* variables */
+
+:root {
+	/* Accent */
+	--sl-color-accent: #d4d4d4;
+	--sl-color-accent-high: #e8e8e8;
+	--sl-color-accent-low: #999;
+
+	/* Backgrounds */
+	--sl-color-bg: #2a2a2e;
+	--sl-color-bg-sidebar: #222226;
+	--sl-color-bg-nav: rgba(34, 34, 38, 0.95);
+	--sl-color-bg-inline-code: rgba(255, 255, 255, 0.06);
+
+	/* Text */
+	--sl-color-text: #d4d4d4;
+	--sl-color-text-muted: #666;
+
+	/* Gray scale */
+	--sl-color-gray-1: #1a1a1c;
+	--sl-color-gray-2: #222226;
+	--sl-color-gray-3: #2a2a2e;
+	--sl-color-gray-4: #333338;
+	--sl-color-gray-5: #555;
+	--sl-color-gray-6: #888;
+	--sl-color-gray-7: #d4d4d4;
+
+	/* Hairlines */
+	--sl-color-hairline-shade: rgba(255, 255, 255, 0.08);
+	--sl-color-hairline: rgba(255, 255, 255, 0.12);
+
+	/* Font */
+	--sl-font: system-ui, -apple-system, sans-serif;
+	--sl-font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+
+	/* Layout */
+	--sl-sidebar-width: 18rem;
+	--sl-content-width: 45rem;
+}
+
+/* Body gradient matching base.css */
+html[data-theme='dark'],
+html {
+	background: #2a2a2e;
+	background-image:
+		radial-gradient(ellipse 120% 50% at 50% 0%, rgba(18, 18, 20, 0.8) 0%, transparent 70%),
+		radial-gradient(ellipse 80% 40% at 50% 0%, rgba(15, 15, 18, 0.5) 0%, transparent 60%),
+		linear-gradient(to bottom, #222226 0%, #2a2a2e 60%, #333338 100%);
+	background-attachment: fixed;
+	color: #d4d4d4;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 200 !important;
+	letter-spacing: 0.08em !important;
+	color: #e8e8e8 !important;
+}
+
+/* Sidebar */
+.starlight-sidebar {
+	background: var(--sl-color-bg-sidebar) !important;
+	border-right: 1px solid var(--sl-color-hairline-shade) !important;
+}
+
+.sidebar-item a {
+	color: var(--sl-color-text-muted) !important;
+	transition: color 0.2s ease !important;
+}
+
+.sidebar-item a:hover,
+.sidebar-item a[aria-current='page'] {
+	color: var(--sl-color-text) !important;
+}
+
+/* Prose links */
+a {
+	color: var(--sl-color-accent-high);
+	transition: color 0.2s ease;
+}
+
+a:hover {
+	color: #fff;
+}
+
+/* Code blocks */
+pre {
+	background: rgba(0, 0, 0, 0.3) !important;
+	border: 1px solid var(--sl-color-hairline-shade) !important;
+	border-radius: 8px !important;
+}
+
+code {
+	font-family: var(--sl-font-mono) !important;
+}
+
+/* Blockquotes */
+blockquote {
+	border-left: 3px solid var(--sl-color-gray-5) !important;
+	color: var(--sl-color-text-muted) !important;
+}
+
+/* Tables */
+table {
+	border-collapse: collapse;
+}
+
+th, td {
+	border-bottom: 1px solid var(--sl-color-hairline-shade) !important;
+	padding: 0.75rem 1rem !important;
+}
+
+th {
+	color: var(--sl-color-accent-high) !important;
+	font-weight: 600 !important;
+}
+
+/* TOC sidebar */
+.toc-panel {
+	border-left: 1px solid var(--sl-color-hairline-shade) !important;
+}
+
+/* Search */
+.search-input {
+	background: rgba(255, 255, 255, 0.05) !important;
+	border: 1px solid var(--sl-color-hairline-shade) !important;
+	border-radius: 8px !important;
+	color: var(--sl-color-text) !important;
+}
+
+.search-input:focus {
+	border-color: var(--sl-color-hairline) !important;
+	outline: none !important;
+}
+
+/* Footer */
+.site-footer {
+	border-top: 1px solid var(--sl-color-hairline-shade) !important;
+}
+
+/* Banner offset */
+.main-frame {
+	padding-top: calc(2rem + var(--sl-nav-height)) !important;
+}

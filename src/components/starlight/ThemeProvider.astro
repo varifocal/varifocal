@@ -1,0 +1,11 @@
+---
+import Default from '@astrojs/starlight/components/ThemeProvider.astro';
+---
+
+<Default>
+	<slot />
+</Default>
+
+<script is:inline>
+	document.documentElement.dataset.theme = 'dark';
+</script>
