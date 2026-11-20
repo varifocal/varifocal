@@ -1,5 +1,4 @@
-<img width="900" height="300" alt="varifocal_banner" src="https://github.com/user-attachments/assets/19348830-3d8e-4b82-82c5-34834e8318d3" />
-
+<img width="900" height="300" alt="varifocal_banner" src="./assets/banner.gif" />
 
 
 
@@ -32,5 +31,26 @@
     </td>
   </tr>
 </table>
+
+</details>
+
+
+<details>
+<summary>About Me</summary>
+
+### Hey, I'm Vari
+
+I'm a student developer interested in Android ROM development and low-level software engineering.
+
+- **Currently working on:** Building LineageOS for an A12 device.
+- **Main tools:** C, Makefiles, and tools used in Android ROM development.
+- **Currently learning:** Kernel optimization and Android ROM building.
+- **Interests:** Software development, drawing, volleyball, basketball, and football.
+- **Other activities:** I practice two martial arts, including traditional martial arts and kung fu.
+- **Future goals:** Get into a good university after high school and improve my focus on academics.
+
+### Connect
+
+- **Discord:** [Join my server](https://discord.gg/rmVETGuNx6)
 
 </details>
