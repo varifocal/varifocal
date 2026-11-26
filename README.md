@@ -7,7 +7,7 @@
 
 <p align="center">
   <img
-    src="https://ghstats.dev/api/sparkline?username=Varifocal&theme=catppuccin&days=30&width=320&height=80"
+    src="https://ghstats.dev/api/sparkline?username=varifocal&theme=catppuccin&days=30&width=320&height=80"
     height="165"
     alt="Activity Graph"
   />
@@ -17,14 +17,14 @@
   <tr>
     <td>
       <img
-        src="https://ghstats.dev/api/card?username=Varifocal&theme=catppuccin&hide_border=true&hide_title=true&size=compact"
+        src="https://ghstats.dev/api/card?username=varifocal&theme=catppuccin&hide_border=true&hide_title=true&size=compact"
         height="165"
         alt="GitHub Stats Card"
       />
     </td>
     <td>
       <img
-        src="https://ghstats.dev/api/langs?username=Varifocal&theme=catppuccin&hide_border=true&max_langs=12&layout=donut"
+        src="https://ghstats.dev/api/langs?username=varifocal&theme=catppuccin&hide_border=true&max_langs=12&layout=donut"
         height="165"
         alt="Top Languages"
       />
